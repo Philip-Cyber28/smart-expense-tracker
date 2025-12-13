@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Depends
-from app.api import auth
+from app.api import auth, expense, ocr
 from app.services.dependencies import get_current_user
-from app.api import expense
 
 app = FastAPI(
     title="Smart Tracker Expense API",
@@ -11,6 +10,7 @@ app = FastAPI(
 
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(expense.router, prefix="/expenses")
+app.include_router(ocr.router)
 
 @app.get("/")
 def read_root():
