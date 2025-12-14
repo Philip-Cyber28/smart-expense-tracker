@@ -10,10 +10,16 @@ import {
   NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 import { Switch } from "@/components/ui/switch";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 const NavBar = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    await API.post("/auth/logout");
+    navigate("/login");
+  };
   return (
     <header className="p-2 m-5 rounded-4xl bg-blue-400 text-white shadow mt-5 flex items-center justify-between">
       <h1 className="pl-4 text-2xl font-bold">Smart Expense Tracker</h1>
@@ -48,7 +54,12 @@ const NavBar = () => {
               <NavigationMenuLink href="/manageAccount">
                 Manage Account
               </NavigationMenuLink>
-              <NavigationMenuLink href="">Logout</NavigationMenuLink>
+              <NavigationMenuLink
+                onClick={handleLogout}
+                className="cursor-pointer"
+              >
+                Logout
+              </NavigationMenuLink>
             </NavigationMenuContent>
           </NavigationMenuItem>
           <div className="flex items-center justify-between px-4 py-2 cursor-default">

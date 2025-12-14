@@ -1,5 +1,5 @@
 CATEGORY_MAPPING = {
-    "Food & Dining": "Food & Dining",
+    "Food & Dining": "Food & Groceries",
     "Transportation": "Transportation",
     "Entertainment & Recreation": "Entertainment & Recreation",
     "Healthcare & Medical": "Healthcare & Medical",
