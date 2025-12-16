@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List,Optional
 
 from app.db.database import SessionLocal
-from app.models.models import Expense, User
+from app.models.models import Expense, User, Category
 from app.schemas.expense import ExpenseCreate, ExpenseResponse, ExpenseUpdate
 from app.services.dependencies import get_current_user
 
@@ -32,7 +32,19 @@ def create_expense(
     db.add(new_expense)
     db.commit()
     db.refresh(new_expense)
-    return new_expense
+    return {
+        "id": new_expense.id,
+        "title": new_expense.title,
+        "amount": new_expense.amount,
+        "category": new_expense.category.name,
+        "date": new_expense.date
+    }
+
+
+@router.get("/categories")
+def get_categories(db: Session = Depends(get_db)):
+    categories = db.query(Category).all()
+    return [{"id": c.id, "name": c.name} for c in categories]
 
 # GET EXPENSE
 @router.get("/", response_model=List[ExpenseResponse])
@@ -46,7 +58,16 @@ def get_expenses(
     if category_id:
         query = query.filter(Expense.category_id == category_id)
     
-    return query.all()
+    expenses = query.all()
+
+    return [{
+        "id": e.id,
+        "title": e.title,
+        "amount": e.amount,
+        "category": e.category.name,
+        "date": e.date
+    }
+    for e in expenses]
 
 # UPDATE EXPENSE
 @router.put("/{expense_id}", response_model = ExpenseResponse)
@@ -71,7 +92,13 @@ def update_expense(
 
     db.commit()
     db.refresh(expense)
-    return expense
+    return {
+        "id": expense.id,
+        "title": expense.title,
+        "amount": expense.amount,
+        "category": expense.category.name,
+        "date": expense.date
+    }
 
 # DELETE EXPENSE
 @router.delete("/{expense_id}")
@@ -92,4 +119,5 @@ def delete_expense(
     db.commit()
 
     return{"message": "Expense deleted successfully"}
+
 

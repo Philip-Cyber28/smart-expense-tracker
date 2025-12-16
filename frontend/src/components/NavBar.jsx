@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -9,19 +8,17 @@ import {
   NavigationMenuTrigger,
   NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
-import { Switch } from "@/components/ui/switch";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
 const NavBar = () => {
-  const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
   const handleLogout = async () => {
     await API.post("/auth/logout");
     navigate("/login");
   };
   return (
-    <header className="p-2 m-5 rounded-4xl bg-blue-400 text-white shadow mt-5 flex items-center justify-between">
+    <header className="p-2 bg-black text-white shadow flex items-center justify-between">
       <h1 className="pl-4 text-2xl font-bold">Smart Expense Tracker</h1>
       <NavigationMenu viewport={false}>
         <NavigationMenuList className="gap-4">
@@ -33,7 +30,7 @@ const NavBar = () => {
             <NavigationMenuTrigger className="cursor-pointer">
               Manage Expenses
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="mr-3 text-black grid gap-4 text-center">
+            <NavigationMenuContent className=" text-white grid gap-4 text-center bg-black">
               <NavigationMenuLink href="/viewExpenses">
                 View Expenses
               </NavigationMenuLink>
@@ -50,7 +47,7 @@ const NavBar = () => {
             <NavigationMenuTrigger className="cursor-pointer">
               Account
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="mr-3 text-black grid gap-2 text-center">
+            <NavigationMenuContent className=" text-white grid gap-4 text-center bg-black">
               <NavigationMenuLink href="/manageAccount">
                 Manage Account
               </NavigationMenuLink>
@@ -62,10 +59,6 @@ const NavBar = () => {
               </NavigationMenuLink>
             </NavigationMenuContent>
           </NavigationMenuItem>
-          <div className="flex items-center justify-between px-4 py-2 cursor-default">
-            <span className="text-sm pr-3 font-medium">Dark Mode</span>
-            <Switch checked={darkMode} onCheckedChange={setDarkMode} />
-          </div>
         </NavigationMenuList>
       </NavigationMenu>
     </header>

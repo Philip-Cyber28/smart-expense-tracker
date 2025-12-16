@@ -3,6 +3,10 @@ import NavBar from "../components/NavBar";
 import { FaDollarSign, FaReceipt, FaListUl } from "react-icons/fa";
 import { Doughnut, Line } from "react-chartjs-2";
 import API from "../services/api";
+import MainCard from "../components/MainCard";
+import { HiTrendingUp } from "react-icons/hi";
+import { IoMdCash } from "react-icons/io";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 import {
   Chart as ChartJS,
@@ -60,7 +64,7 @@ const Dashboard = () => {
   }, [expenses]);
 
   const doughnutData = {
-    label: Object.keys(summary.categories),
+    labels: Object.keys(summary.categories),
     datasets: [
       {
         data: Object.values(summary.categories),
@@ -77,77 +81,125 @@ const Dashboard = () => {
     ],
   };
 
-  const lineData = {
-    label: expenses.map((e) => new Date(e.date).toLocaleDateString()),
-    datasets: [
-      {
-        label: "Expense Amount",
-        data: expenses.map((e) => e.amount),
-        fill: false,
-        borderColor: "#3b82f6",
-        tension: 0.3,
+  const doughnutOptions = {
+    maintainAspectRatio: false,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (tooltipItem) {
+            const cat = tooltipItem.label;
+            const value = tooltipItem.raw;
+            const percent = ((value / summary.total) * 100).toFixed(2);
+            return `${cat}: $${value} (${percent}%)`;
+          },
+        },
       },
-    ],
+    },
   };
 
-  if (loading) return <div className="p-8">Loading Expenses....</div>;
+  const lineData = useMemo(() => {
+    const dates = [
+      ...new Set(expenses.map((e) => new Date(e.date).toLocaleDateString())),
+    ].sort();
+    const categories = [...new Set(expenses.map((e) => e.category))];
+
+    const datasets = categories.map((cat, idx) => {
+      const data = dates.map((date) => {
+        return expenses
+          .filter(
+            (e) =>
+              new Date(e.date).toLocaleDateString() === date &&
+              e.category === cat
+          )
+          .reduce((sum, e) => sum + e.amount, 0);
+      });
+      const colors = [
+        "#3b82f6",
+        "#ef4444",
+        "#f59e0b",
+        "#10b981",
+        "#8b5cf6",
+        "#ec4899",
+        "#6b7280",
+      ];
+      return {
+        label: cat,
+        data,
+        borderColor: colors[idx % colors.length],
+        fill: false,
+      };
+    });
+    return { labels: dates, datasets };
+  }, [expenses]);
+
+  if (loading) return <LoadingSpinner height="60vh" />;
   if (error) return <div className="p-8 text-red-500">{error}</div>;
 
   return (
     <div className="min-h-screen bg-gray-100">
       <NavBar />
-      <main className="p-8">
-        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded shadow flex items-center gap-4">
-            <FaDollarSign className="text-4xl text-blue-500" />
-            <div>
-              <p className="text-gray-500">Total Expenses</p>
-              <p className="text-2xl font-bold">${summary.total.toFixed(2)}</p>
+      <main className="p-2">
+        <h1 className="text-3xl font-bold mt-2 mb-6 text-center">Dashboard</h1>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <MainCard
+            title="Total Expenses"
+            className="shadow-lg shadow-blue-500"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <IoMdCash className="text-4xl text-blue-500" />
+              <span>${summary.total.toFixed(2)}</span>
             </div>
-          </div>
+          </MainCard>
 
-          <div className="bg-white p-6 rounded shadow flex items-center gap-4">
-            <FaReceipt className="text-4xl text-green-500" />
-            <div>
-              <p className="text-gray-500">Number of Expenses</p>
-              <p className="text-2xl font-bold">{expenses.length}</p>
+          <MainCard
+            title="Number of Expenses"
+            className="shadow-lg shadow-amber-500"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <FaReceipt className="text-4xl text-amber-500" />
+              {expenses.length}
             </div>
-          </div>
+          </MainCard>
 
-          <div className="bg-white p-6 rounded shadow flex items-center gap-4">
-            <FaListUl className="text-4xl text-purple-500 " />
-            <div>
-              <p className="text-gray-500">Categories Used</p>
-              <p className="text-2xl font-bold">
-                {Object.keys(summary.categories).length}
-              </p>
+          <MainCard title="Categories" className="shadow-lg shadow-purple-500">
+            <div className="flex items-center justify-center gap-2">
+              <FaListUl className="text-4xl text-purple-500 " />
+              {Object.keys(summary.categories).length}
             </div>
-          </div>
+          </MainCard>
+
+          <MainCard
+            title="Average per Transaction"
+            className="shadow-lg shadow-green-500"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <HiTrendingUp className="text-4xl text-green-500 " />$
+              {expenses.length > 0
+                ? (summary.total / expenses.length).toFixed(2)
+                : "0.00"}
+            </div>
+          </MainCard>
         </div>
+
         {/* CHARTS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded p-6 shadow">
-            <h2 className="text-xl font-bold mb-4">Expense by Category</h2>
-            <Doughnut data={doughnutData} />
-          </div>
-          <div className="bg-white rounded p-6 shadow">
-            <h2 className="text-xl font-bold mb-4">Expense Over Time</h2>
-            <Line data={lineData} />
-          </div>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <MainCard
+            title="Expense by Category"
+            className="shadow-lg shadow-lime-600"
+          >
+            <div className="h-80">
+              <Doughnut data={doughnutData} options={doughnutOptions} />
+            </div>
+          </MainCard>
 
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-blue-500 text-white p-6 rounded shadow text-center cursor-pointer hover:bg-blue-700">
-            <a href="">View Expense</a>
-          </div>
-          <div className="bg-blue-500 text-white p-6 rounded shadow text-center cursor-pointer hover:bg-blue-700">
-            <a href="">Add Expense</a>
-          </div>
-          <div className="bg-blue-500 text-white p-6 rounded shadow text-center cursor-pointer hover:bg-blue-700">
-            <a href="">Upload Receipt</a>
-          </div>
+          <MainCard
+            title="Expense Over Time"
+            className="shadow-lg shadow-pink-500"
+          >
+            <div className="h-80">
+              <Line data={lineData} />
+            </div>
+          </MainCard>
         </div>
       </main>
     </div>

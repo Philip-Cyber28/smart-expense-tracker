@@ -5,11 +5,10 @@ from typing import Optional
 class ExpenseBase(BaseModel):
     title : str
     amount: float
-    category_id: int
     date: Optional[datetime] = None
 
 class ExpenseCreate(ExpenseBase):
-    pass
+    category_id : int
 
 class ExpenseUpdate(BaseModel):
     title: Optional[str] = None
@@ -19,7 +18,10 @@ class ExpenseUpdate(BaseModel):
 
 class ExpenseResponse(ExpenseBase):
     id: int
-    user_id: int
+    title: str
+    amount: float
+    category: str
+    date: Optional[datetime] = None
 
     class Config:
         from_attributes = True

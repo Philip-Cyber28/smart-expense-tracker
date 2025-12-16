@@ -9,7 +9,7 @@ from app.db.database import  SessionLocal, engine, Base
 
 Base.metadata.create_all(bind=engine)
 
-categories = ["Food", "Transport", "Bills", "Shopping", "Entertainment", "Health", "Other"]
+categories = [ "Food & Groceries", "Transportation", "Utilities & Services", "Entertainment & Recreation", "Healthcare & Medical", "Shopping & Retail", "Other" ]
 
 db = SessionLocal()
 
