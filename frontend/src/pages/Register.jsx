@@ -24,10 +24,12 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="p-6 bg-white shadow-md rounded-md w-96">
-        <h1 className="text-2xl mb-4 font-bold text-center">Register</h1>
-        {error && <p className="text-red-500">{error}</p>}
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+      <div className="p-6 md:p-8 bg-white shadow-md rounded-md w-full max-w-md">
+        <h1 className="text-2xl md:text-3xl mb-4 font-bold text-center">
+          Register
+        </h1>
+        {error && <p className="text-red-500 mb-2 text-sm">{error}</p>}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <Input
             name="email"
@@ -35,7 +37,7 @@ const Register = () => {
             value={form.email}
             onChange={handleChange}
             placeholder="Email"
-            className="w-full rounded-base shadow p-2 mb-2"
+            className="w-full rounded-base shadow p-2"
             required
           />
           <Input
@@ -43,7 +45,7 @@ const Register = () => {
             value={form.username}
             onChange={handleChange}
             placeholder="Username"
-            className="w-full rounded-base shadow p-2 mb-2"
+            className="w-full rounded-base shadow p-2"
             required
           />
           <Input
@@ -52,18 +54,17 @@ const Register = () => {
             value={form.password}
             onChange={handleChange}
             placeholder="Password"
-            className="w-full rounded-base shadow p-2 mb-4"
+            className="w-full rounded-base shadow p-2"
             required
           />
-          <Button className="w-full bg-blue-400 text-white rounded shadow-md p-3 mb-2">
+          <Button className="w-full bg-blue-400 text-white rounded shadow-md p-3 hover:bg-blue-500">
             Sign up
           </Button>
         </form>
 
-        <p className="text-center">
+        <p className="text-center mt-4 text-sm md:text-base">
           Already have an account?
-          <Link className="text-blue-500" to="/login">
-            {" "}
+          <Link className="text-blue-500 ml-1" to="/login">
             Login
           </Link>
         </p>

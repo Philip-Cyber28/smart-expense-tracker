@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import NavBar from "../components/NavBar";
-import { FaDollarSign, FaReceipt, FaListUl } from "react-icons/fa";
+import { FaReceipt, FaListUl } from "react-icons/fa";
 import { Doughnut, Line } from "react-chartjs-2";
 import API from "../services/api";
 import MainCard from "../components/MainCard";
@@ -83,7 +83,11 @@ const Dashboard = () => {
 
   const doughnutOptions = {
     maintainAspectRatio: false,
+    responsive: true,
     plugins: {
+      legend: {
+        position: window.innerWidth < 768 ? "bottom" : "right",
+      },
       tooltip: {
         callbacks: {
           label: function (tooltipItem) {
@@ -132,22 +136,46 @@ const Dashboard = () => {
     return { labels: dates, datasets };
   }, [expenses]);
 
+  const lineOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: window.innerWidth < 768 ? "bottom" : "top",
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          maxRotation: 45,
+          minRotation: 45,
+        },
+      },
+    },
+  };
+
   if (loading) return <LoadingSpinner height="60vh" />;
-  if (error) return <div className="p-8 text-red-500">{error}</div>;
+  if (error) return <div className="p-4 md:p-8 text-red-500">{error}</div>;
 
   return (
     <div className="min-h-screen bg-gray-100">
       <NavBar />
-      <main className="p-2">
-        <h1 className="text-3xl font-bold mt-2 mb-6 text-center">Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <main className="p-3 md:p-4 lg:p-6">
+        <h1 className="text-2xl md:text-3xl font-bold mt-2 mb-4 md:mb-6 text-center">
+          Dashboard
+        </h1>
+
+        {/* STATS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6 mb-6 md:mb-8">
           <MainCard
             title="Total Expenses"
             className="shadow-lg shadow-blue-500"
           >
             <div className="flex items-center justify-center gap-2">
-              <IoMdCash className="text-4xl text-blue-500" />
-              <span>${summary.total.toFixed(2)}</span>
+              <IoMdCash className="text-3xl md:text-4xl text-blue-500" />
+              <span className="text-lg md:text-xl">
+                ${summary.total.toFixed(2)}
+              </span>
             </div>
           </MainCard>
 
@@ -156,15 +184,17 @@ const Dashboard = () => {
             className="shadow-lg shadow-amber-500"
           >
             <div className="flex items-center justify-center gap-2">
-              <FaReceipt className="text-4xl text-amber-500" />
-              {expenses.length}
+              <FaReceipt className="text-3xl md:text-4xl text-amber-500" />
+              <span className="text-lg md:text-xl">{expenses.length}</span>
             </div>
           </MainCard>
 
           <MainCard title="Categories" className="shadow-lg shadow-purple-500">
             <div className="flex items-center justify-center gap-2">
-              <FaListUl className="text-4xl text-purple-500 " />
-              {Object.keys(summary.categories).length}
+              <FaListUl className="text-3xl md:text-4xl text-purple-500" />
+              <span className="text-lg md:text-xl">
+                {Object.keys(summary.categories).length}
+              </span>
             </div>
           </MainCard>
 
@@ -173,21 +203,24 @@ const Dashboard = () => {
             className="shadow-lg shadow-green-500"
           >
             <div className="flex items-center justify-center gap-2">
-              <HiTrendingUp className="text-4xl text-green-500 " />$
-              {expenses.length > 0
-                ? (summary.total / expenses.length).toFixed(2)
-                : "0.00"}
+              <HiTrendingUp className="text-3xl md:text-4xl text-green-500" />
+              <span className="text-lg md:text-xl">
+                $
+                {expenses.length > 0
+                  ? (summary.total / expenses.length).toFixed(2)
+                  : "0.00"}
+              </span>
             </div>
           </MainCard>
         </div>
 
         {/* CHARTS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
           <MainCard
             title="Expense by Category"
             className="shadow-lg shadow-lime-600"
           >
-            <div className="h-80">
+            <div className="h-64 sm:h-72 md:h-80">
               <Doughnut data={doughnutData} options={doughnutOptions} />
             </div>
           </MainCard>
@@ -196,8 +229,8 @@ const Dashboard = () => {
             title="Expense Over Time"
             className="shadow-lg shadow-pink-500"
           >
-            <div className="h-80">
-              <Line data={lineData} />
+            <div className="h-64 sm:h-72 md:h-80">
+              <Line data={lineData} options={lineOptions} />
             </div>
           </MainCard>
         </div>

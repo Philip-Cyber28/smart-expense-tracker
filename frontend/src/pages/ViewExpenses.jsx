@@ -88,104 +88,127 @@ const ViewExpenses = () => {
   return (
     <>
       <NavBar />
-      <h1 className="text-2xl text-center mt-3 font-bold">View Expenses</h1>
+      <div className="px-4 py-3">
+        <h1 className="text-xl md:text-2xl text-center mt-2 mb-4 font-bold">
+          View Expenses
+        </h1>
 
-      {/* FILTERS */}
-      <div className="flex flex-col md:flex-row gap-4 mb-4 items-center px-6 mt-4">
-        <Input
-          placeholder="Search by title..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="w-full md:w-1/2"
-        />
+        {/* FILTERS */}
+        <div className="flex flex-col md:flex-row gap-3 md:gap-4 mb-4 max-w-5xl mx-auto">
+          <Input
+            placeholder="Search by title..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full md:flex-1"
+          />
 
-        <Select
-          value={sortBy}
-          onValueChange={(value) => {
-            setSortBy(value);
-            setCurrentPage(1);
-          }}
-        >
-          <SelectTrigger className="w-full md:w-1/3">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="date-desc">Date (Newest)</SelectItem>
-              <SelectItem value="date-asc">Date (Oldest)</SelectItem>
-              <SelectItem value="amount-desc">Amount (High → Low)</SelectItem>
-              <SelectItem value="amount-asc">Amount (Low → High)</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
+          <Select
+            value={sortBy}
+            onValueChange={(value) => {
+              setSortBy(value);
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="w-full md:w-56">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="date-desc">Date (Newest)</SelectItem>
+                <SelectItem value="date-asc">Date (Oldest)</SelectItem>
+                <SelectItem value="amount-desc">Amount (High → Low)</SelectItem>
+                <SelectItem value="amount-asc">Amount (Low → High)</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* TABLE */}
-      <div className="p-6">
-        <MainCard className="shadow-lg shadow-sky-950">
-          {loading ? (
-            <LoadingSpinner />
-          ) : (
-            <MainTable
-              data={paginatedExpenses}
-              columns={[
-                {
-                  key: "date",
-                  label: "Date",
-                  render: (e) => new Date(e.date).toLocaleDateString(),
-                },
-                { key: "title", label: "Title" },
-                { key: "category", label: "Category" },
-                {
-                  key: "amount",
-                  label: "Amount",
-                  render: (e) => `$${e.amount}`,
-                },
-              ]}
-              onDelete={handleDelete}
-              onEdit={handleEdit}
-              isLoading={loading}
-              noDataMessage="No expenses found"
-            />
-          )}
+        {/* TABLE */}
+        <div className="max-w-6xl mx-auto">
+          <MainCard className="shadow-lg shadow-sky-950">
+            {loading ? (
+              <LoadingSpinner />
+            ) : (
+              <div className="overflow-x-auto">
+                <MainTable
+                  data={paginatedExpenses}
+                  columns={[
+                    {
+                      key: "date",
+                      label: "Date",
+                      render: (e) => new Date(e.date).toLocaleDateString(),
+                    },
+                    { key: "title", label: "Title" },
+                    { key: "category", label: "Category" },
+                    {
+                      key: "amount",
+                      label: "Amount",
+                      render: (e) => `$${e.amount}`,
+                    },
+                  ]}
+                  onDelete={handleDelete}
+                  onEdit={handleEdit}
+                  isLoading={loading}
+                  noDataMessage="No expenses found"
+                />
+              </div>
+            )}
 
-          {/* PAGINATION */}
-          {totalPages > 1 && !loading && (
-            <div className="flex justify-center mt-6">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                    />
-                  </PaginationItem>
-
-                  {[...Array(totalPages)].map((_, i) => (
-                    <PaginationItem key={i}>
-                      <PaginationLink
-                        isActive={currentPage === i + 1}
-                        onClick={() => setCurrentPage(i + 1)}
-                      >
-                        {i + 1}
-                      </PaginationLink>
+            {/* PAGINATION */}
+            {totalPages > 1 && !loading && (
+              <div className="flex justify-center mt-6">
+                <Pagination>
+                  <PaginationContent className="flex-wrap gap-1">
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() =>
+                          setCurrentPage((p) => Math.max(p - 1, 1))
+                        }
+                        className="cursor-pointer"
+                      />
                     </PaginationItem>
-                  ))}
+                    {[...Array(totalPages)].map((_, i) => {
+                      const page = i + 1;
+                      const showOnMobile =
+                        page === 1 ||
+                        page === totalPages ||
+                        Math.abs(page - currentPage) <= 1;
 
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() =>
-                        setCurrentPage((p) => Math.min(p + 1, totalPages))
-                      }
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
-          )}
-        </MainCard>
+                      return (
+                        <PaginationItem
+                          key={i}
+                          className={`${
+                            !showOnMobile ? "hidden sm:block" : ""
+                          }`}
+                        >
+                          <PaginationLink
+                            isActive={currentPage === page}
+                            onClick={() => setCurrentPage(page)}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    })}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() =>
+                          setCurrentPage((p) => Math.min(p + 1, totalPages))
+                        }
+                        className="cursor-pointer"
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </MainCard>
+        </div>
       </div>
     </>
   );

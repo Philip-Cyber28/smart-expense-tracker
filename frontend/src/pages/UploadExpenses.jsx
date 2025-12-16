@@ -123,113 +123,130 @@ const UploadExpenses = () => {
   return (
     <>
       <NavBar />
-      <div className="max-w-2xl mx-auto mt-6 p-4">
-        <h1 className="text-2xl font-bold text-center mb-4">
+      <div className="max-w-2xl mx-auto mt-4 md:mt-6 p-4">
+        <h1 className="text-xl md:text-2xl font-bold text-center mb-4">
           Upload Receipt (OCR)
         </h1>
 
-        <Input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
+        <div className="bg-white rounded-lg shadow-lg p-4 md:p-6">
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setFile(e.target.files[0])}
+            className="text-sm"
+          />
 
-        <Button
-          className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white"
-          onClick={runOCR}
-          disabled={loading || !file}
-        >
-          {loading ? "Processing..." : "Run OCR"}
-        </Button>
+          <Button
+            className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={runOCR}
+            disabled={loading || !file}
+          >
+            {loading ? "Processing..." : "Run OCR"}
+          </Button>
 
-        {error && <p className="text-red-500 mt-3">{error}</p>}
+          {error && (
+            <p className="text-red-500 bg-red-50 p-2 rounded mt-3 text-sm">
+              {error}
+            </p>
+          )}
 
-        {ocrText && (
-          <div className="mt-6 p-3 border rounded bg-gray-50">
-            <h2 className="font-bold mb-2">Extracted Text</h2>
-            <pre className="text-sm whitespace-pre-wrap">{ocrText}</pre>
-          </div>
-        )}
-
-        {ocrText && (
-          <div className="mt-6">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="font-bold">Detected Expenses</h2>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={addManualItem}
-                className="bg-blue-400 text-white hover:bg-blue-700"
-              >
-                + Add Item
-              </Button>
+          {ocrText && (
+            <div className="mt-6 p-3 border rounded bg-gray-50">
+              <h2 className="font-bold mb-2 text-sm md:text-base">
+                Extracted Text
+              </h2>
+              <pre className="text-xs md:text-sm whitespace-pre-wrap overflow-x-auto">
+                {ocrText}
+              </pre>
             </div>
+          )}
 
-            {items.length === 0 && (
-              <p className="text-gray-500 text-center py-4">
-                No items detected. Click "Add Item" to add manually.
-              </p>
-            )}
-
-            {items.map((item, i) => (
-              <div key={i} className="border rounded p-3 mb-3 bg-white shadow">
-                <Input
-                  value={item.title}
-                  onChange={(e) => updateItem(i, "title", e.target.value)}
-                  placeholder="Title"
-                />
-
-                <Input
-                  className="mt-2"
-                  type="number"
-                  step="0.01"
-                  value={item.amount}
-                  onChange={(e) => updateItem(i, "amount", e.target.value)}
-                  placeholder="Amount"
-                />
-
-                <Select
-                  value={item.category_id?.toString() || ""}
-                  onValueChange={(value) =>
-                    updateItem(i, "category_id", Number(value))
-                  }
-                >
-                  <SelectTrigger className="mt-2 w-full">
-                    <SelectValue placeholder="Select Category" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      {categories.map((c) => (
-                        <SelectItem key={c.id} value={c.id.toString()}>
-                          {c.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-
+          {ocrText && (
+            <div className="mt-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                <h2 className="font-bold text-sm md:text-base">
+                  Detected Expenses
+                </h2>
                 <Button
-                  variant="destructive"
                   size="sm"
-                  className="mt-2 bg-red-600 text-white hover:bg-red-700"
-                  onClick={() => removeItem(i)}
+                  variant="outline"
+                  onClick={addManualItem}
+                  className="bg-blue-400 text-white hover:bg-blue-700 w-full sm:w-auto"
                 >
-                  Remove
+                  + Add Item
                 </Button>
               </div>
-            ))}
 
-            {items.length > 0 && (
-              <Button
-                className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white"
-                onClick={saveExpenses}
-              >
-                Save All Expenses
-              </Button>
-            )}
-          </div>
-        )}
+              {items.length === 0 && (
+                <p className="text-gray-500 text-center py-4 text-sm">
+                  No items detected. Click "Add Item" to add manually.
+                </p>
+              )}
+
+              {items.map((item, i) => (
+                <div
+                  key={i}
+                  className="border rounded p-3 md:p-4 mb-3 bg-white shadow"
+                >
+                  <Input
+                    value={item.title}
+                    onChange={(e) => updateItem(i, "title", e.target.value)}
+                    placeholder="Title"
+                    className="text-sm"
+                  />
+
+                  <Input
+                    className="mt-2"
+                    type="number"
+                    step="0.01"
+                    value={item.amount}
+                    onChange={(e) => updateItem(i, "amount", e.target.value)}
+                    placeholder="Amount"
+                  />
+
+                  <Select
+                    value={item.category_id?.toString() || ""}
+                    onValueChange={(value) =>
+                      updateItem(i, "category_id", Number(value))
+                    }
+                  >
+                    <SelectTrigger className="mt-2 w-full">
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectGroup>
+                        {categories.map((c) => (
+                          <SelectItem key={c.id} value={c.id.toString()}>
+                            {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="mt-2 w-full bg-red-600 text-white hover:bg-red-700"
+                    onClick={() => removeItem(i)}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+
+              {items.length > 0 && (
+                <Button
+                  className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white"
+                  onClick={saveExpenses}
+                >
+                  Save All Expenses
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

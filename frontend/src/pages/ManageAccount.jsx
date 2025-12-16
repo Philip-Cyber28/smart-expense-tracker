@@ -60,54 +60,69 @@ const ManageAccount = () => {
   return (
     <>
       <NavBar />
-      <div className="max-w-md mx-auto mt-8 p-4">
-        <h1 className="text-2xl font-bold mb-4 text-center">Manage Account</h1>
+      <div className="max-w-md mx-auto mt-6 md:mt-8 p-4 md:p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h1 className="text-xl md:text-2xl font-bold mb-4 text-center">
+            Manage Account
+          </h1>
 
-        {message && <p className="text-green-600">{message}</p>}
-        {error && <p className="text-red-500">{error}</p>}
+          {message && (
+            <p className="text-green-600 bg-green-50 p-2 rounded mb-3 text-sm">
+              {message}
+            </p>
+          )}
+          {error && (
+            <p className="text-red-500 bg-red-50 p-2 rounded mb-3 text-sm">
+              {error}
+            </p>
+          )}
 
-        <h2 className="font-bold mt-4">Edit Profile</h2>
+          <h2 className="font-bold mt-4 mb-2">Edit Profile</h2>
 
-        <Input
-          className="mt-2"
-          value={user.username}
-          onChange={(e) => setUser({ ...user, username: e.target.value })}
-          placeholder="Username"
-        />
+          <Input
+            className="mt-2"
+            value={user.username}
+            onChange={(e) => setUser({ ...user, username: e.target.value })}
+            placeholder="Username"
+          />
 
-        <Input
-          className="mt-2"
-          value={user.email}
-          onChange={(e) => setUser({ ...user, email: e.target.value })}
-          placeholder="Email"
-        />
+          <Input
+            className="mt-3"
+            value={user.email}
+            onChange={(e) => setUser({ ...user, email: e.target.value })}
+            placeholder="Email"
+          />
 
-        <Button
-          className="w-full mt-3 bg-green-500 text-white"
-          onClick={updateProfile}
-        >
-          Save Changes
-        </Button>
+          <Button
+            className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white"
+            onClick={updateProfile}
+          >
+            Save Changes
+          </Button>
 
-        <hr className="my-6" />
+          <hr className="my-6" />
 
-        <h2 className="font-bold text-red-600">Delete Account</h2>
+          <h2 className="font-bold text-red-600 mb-2">Delete Account</h2>
+          <p className="text-sm text-gray-600 mb-3">
+            This action cannot be undone. Please enter your password to confirm.
+          </p>
 
-        <Input
-          className="mt-2"
-          type="password"
-          placeholder="Confirm password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <Input
+            className="mt-2"
+            type="password"
+            placeholder="Confirm password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        <Button
-          variant="destructive"
-          className="w-full mt-3 bg-red-500"
-          onClick={deleteAccount}
-        >
-          Delete My Account
-        </Button>
+          <Button
+            variant="destructive"
+            className="w-full mt-3 bg-red-500 hover:bg-red-600"
+            onClick={deleteAccount}
+          >
+            Delete My Account
+          </Button>
+        </div>
       </div>
     </>
   );
