@@ -1,25 +1,37 @@
-# Use an official Python image
-FROM python:3.13-slim
+# Use official Python slim image
+FROM python:3.13-slim-bullseye
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Install system dependencies
-RUN apt-get update && \
-    apt-get install -y tesseract-ocr libtesseract-dev build-essential && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    libtesseract-dev \
+    build-essential \
+    libpq-dev \
+    gcc \
+    g++ \
+    python3-dev \
+    curl \
+ && rm -rf /var/lib/apt/lists/*
 
-# Set work directory
+# Set working directory
 WORKDIR /app
 
-# Copy requirements
+# Copy requirements file
 COPY requirements.txt .
 
-# Install Python dependencies
+# Upgrade pip and install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the backend code
+# Copy backend code
 COPY . .
 
-# Expose port
+# Expose port for FastAPI
 EXPOSE 8000
 
 # Start FastAPI with Uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
