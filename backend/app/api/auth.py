@@ -28,7 +28,7 @@ def register(user: schemas.UserCreate, response: Response, db : Session = Depend
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=False,
+        secure=True,
         samesite="lax",
         max_age=3600 * 24 * 7
     )
@@ -46,7 +46,7 @@ def login(user: schemas.UserLogin, response: Response, db : Session = Depends(ge
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=False,
+        secure=True,
         samesite="lax",
         max_age=3600 * 24 * 7
     )
