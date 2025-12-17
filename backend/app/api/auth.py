@@ -29,7 +29,7 @@ def register(user: schemas.UserCreate, response: Response, db : Session = Depend
         value=access_token,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         max_age=3600 * 24 * 7
     )
     return {"message": "Registration successful"}
@@ -47,7 +47,7 @@ def login(user: schemas.UserLogin, response: Response, db : Session = Depends(ge
         value=access_token,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         max_age=3600 * 24 * 7
     )
 
