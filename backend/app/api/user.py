@@ -43,6 +43,12 @@ def delete_account(
 ):
     user = db.query(User).filter(User.id == current_user.id).first()
 
+    if current_user.username == "demo_user":
+        raise HTTPException(
+            status_code=403,
+            detail="Demo account cannot be deleted"
+        )
+
     if not verify_password(data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Incorrect password")
 
